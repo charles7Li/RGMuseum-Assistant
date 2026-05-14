@@ -14,6 +14,7 @@ public class ChatEventListener {
 
     private final JChatMindFactory jChatMindFactory;
 
+    // 监听聊天事件并异步启动对应会话的 Agent 运行流程。
     @Async
     @EventListener
     public void handle(ChatEvent event) {

@@ -39,8 +39,9 @@ public class DocumentController {
     @PostMapping("/documents/upload")
     public ApiResponse<CreateDocumentResponse> uploadDocument(
             @RequestParam("kbId") String kbId,
-            @RequestParam("file") MultipartFile file) {
-        return ApiResponse.success(documentFacadeService.uploadDocument(kbId, file));
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "embeddingRule", required = false) String embeddingRule) {
+        return ApiResponse.success(documentFacadeService.uploadDocument(kbId, file, embeddingRule));
     }
 
     // 删除文档

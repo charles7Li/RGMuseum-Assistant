@@ -1,7 +1,9 @@
 package com.kama.jchatmind.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kama.jchatmind.model.entity.ChatMessage;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,16 +14,8 @@ import java.util.List;
  * @Entity com.kama.jchatmind.model.entity.ChatMessage
  */
 @Mapper
-public interface ChatMessageMapper {
-    int insert(ChatMessage chatMessage);
+public interface ChatMessageMapper extends BaseMapper<ChatMessage> {
+    List<ChatMessage> selectBySessionId(@Param("sessionId") String sessionId);
 
-    ChatMessage selectById(String id);
-
-    List<ChatMessage> selectBySessionId(String sessionId);
-
-    List<ChatMessage> selectBySessionIdRecently(String sessionId, int limit);
-
-    int deleteById(String id);
-
-    int updateById(ChatMessage chatMessage);
+    List<ChatMessage> selectBySessionIdRecently(@Param("sessionId") String sessionId, @Param("limit") int limit);
 }

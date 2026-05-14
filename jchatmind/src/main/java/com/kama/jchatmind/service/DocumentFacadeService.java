@@ -13,7 +13,7 @@ public interface DocumentFacadeService {
 
     CreateDocumentResponse createDocument(CreateDocumentRequest request);
 
-    CreateDocumentResponse uploadDocument(String kbId, MultipartFile file);
+    CreateDocumentResponse uploadDocument(String kbId, MultipartFile file, String embeddingRule);
 
     void deleteDocument(String documentId);
 

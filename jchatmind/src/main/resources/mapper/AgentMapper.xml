@@ -59,7 +59,7 @@
                created_at,
                updated_at
         FROM agent
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{param1} AS uuid)
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
@@ -80,39 +80,39 @@
     <delete id="deleteById">
         DELETE
         FROM agent
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{param1} AS uuid)
     </delete>
 
     <update id="updateById" parameterType="com.kama.jchatmind.model.entity.Agent">
         UPDATE agent
         <set>
-            <if test="name != null">
-                name = #{name},
+            <if test="et.name != null">
+                name = #{et.name},
             </if>
-            <if test="description != null">
-                description = #{description},
+            <if test="et.description != null">
+                description = #{et.description},
             </if>
-            <if test="systemPrompt != null">
-                system_prompt = #{systemPrompt},
+            <if test="et.systemPrompt != null">
+                system_prompt = #{et.systemPrompt},
             </if>
-            <if test="model != null">
-                model = #{model},
-            </if>
-
-            <if test="allowedTools != null">
-                allowed_tools = CAST(#{allowedTools} AS jsonb),
+            <if test="et.model != null">
+                model = #{et.model},
             </if>
 
-            <if test="allowedKbs != null">
-                allowed_kbs = CAST(#{allowedKbs} AS jsonb),
+            <if test="et.allowedTools != null">
+                allowed_tools = CAST(#{et.allowedTools} AS jsonb),
             </if>
 
-            <if test="chatOptions != null">
-                chat_options = CAST(#{chatOptions} AS jsonb),
+            <if test="et.allowedKbs != null">
+                allowed_kbs = CAST(#{et.allowedKbs} AS jsonb),
+            </if>
+
+            <if test="et.chatOptions != null">
+                chat_options = CAST(#{et.chatOptions} AS jsonb),
             </if>
             updated_at = NOW()
         </set>
 
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{et.id} AS uuid)
     </update>
 </mapper>

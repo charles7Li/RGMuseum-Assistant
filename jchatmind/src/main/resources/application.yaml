@@ -1,16 +1,16 @@
 spring:
   application:
-    name: jchatmind
+    name: rgma
   datasource:
     url: jdbc:postgresql://localhost:5432/jchatmind
     username: postgres
-    password: 123456
+    password: ${DB_PASSWORD:}
     driver-class-name: org.postgresql.Driver
   mail:
     host: smtp.qq.com
     port: 587
-    username: your-email
-    password: your-password # 邮箱授权码
+    username: ${EMAIL_USERNAME:}
+    password: ${EMAIL_PASSWORD:} # 邮箱授权码
     default-encoding: UTF-8
     properties:
       mail:
@@ -21,18 +21,26 @@ spring:
             required: true
   ai:
     deepseek:
-      api-key: your-api-key
+      api-key: ${DEEPSEEK_API_KEY:}
       base-url: https://api.deepseek.com
       chat:
         options:
           model: deepseek-chat
     zhipuai:
-      api-key: your-api-key
+      api-key: ${ZHIPUAI_API_KEY:}
       base-url: https://open.bigmodel.cn/api/paas
       chat:
         options:
           model: glm-4.6
-mybatis:
+    openai:
+      api-key: ${OPENAI_API_KEY:}
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      chat:
+        options:
+          model: qwen3.6-plus
+
+
+mybatis-plus:
   type-aliases-package: com.kama.jchatmind.model.entity
   mapper-locations: classpath:mapper/*.xml
   type-handlers-package: com.kama.jchatmind.typehandler
@@ -40,3 +48,71 @@ mybatis:
 document:
   storage:
     base-path: ./data/documents
+
+weather:
+  default-city: 广州
+
+rag:
+  runtime:
+    mode: deep # fast | deep
+    fast:
+      similarity-topk: 2
+      dense-topk: 8
+      lexical-topk: 8
+      rerank-candidate-topk: 4
+  agent:
+    fast:
+      max-steps: 6
+    deep:
+      max-steps: 12
+  ollama:
+    base-url: http://localhost:11434
+  embedding:
+    model: bge-m3
+  milvus:
+    base-url: http://localhost:9091
+    token:
+    collection: chunk_bge_m3
+    image-collection: image_embedding
+    anns-field: embedding
+    search-path: /api/v1/search
+    entities-path: /api/v1/entities
+    metric-type: L2
+    nprobe: 16
+  image-embedding:
+    base-url: http://localhost:18000
+    model: OFA-Sys/chinese-clip-vit-base-patch16
+  image-retrieve:
+    max-distance: 0.80
+  recall:
+    dense:
+      enabled: true
+      topk: 20
+      weight: 1.0
+    lexical:
+      enabled: true
+      topk: 20
+      weight: 0.8
+    rrf-k: 60
+  route:
+    dynamic-enabled: true
+    short-query-char-threshold: 12
+    short-query-lexical-boost: 0.5
+    id-like-lexical-boost: 0.6
+    long-query-dense-boost: 0.3
+  rerank:
+    enabled: true
+    lower-score-better: false
+    provider: http
+    model: BAAI/bge-reranker-v2-m3
+    candidate-topk: 10
+    http:
+      base-url: http://localhost:18000
+      path: /rerank
+
+map:
+  amap:
+    base-url: https://restapi.amap.com
+    key:
+    walking-path: /v3/direction/walking
+    driving-path: /v3/direction/driving

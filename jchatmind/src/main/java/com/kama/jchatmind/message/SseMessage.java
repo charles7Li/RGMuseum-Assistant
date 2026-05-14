@@ -21,6 +21,7 @@ public class SseMessage {
         private ChatMessageVO message;
         private String statusText;
         private Boolean done;
+        private String token;
     }
 
     @Data
@@ -42,5 +43,6 @@ public class SseMessage {
         AI_THINKING,
         AI_EXECUTING,
         AI_DONE,
+        AI_TOKEN,
     }
 }

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -30,6 +31,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     private final ApplicationEventPublisher publisher;
 
     @Override
+    // 按会话查询全部聊天消息并转为 VO 返回。
     public GetChatMessagesResponse getChatMessagesBySessionId(String sessionId) {
         List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionId(sessionId);
         List<ChatMessageVO> result = new ArrayList<>();
@@ -49,8 +51,12 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 按会话读取最近消息并转换为模型恢复上下文所需 DTO。
     public List<ChatMessageDTO> getChatMessagesBySessionIdRecently(String sessionId, int limit) {
-        List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionIdRecently(sessionId, limit);
+        int fetchLimit = Math.max(limit * 3, limit);
+        List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionIdRecently(sessionId, fetchLimit);
+        // SQL 按 created_at DESC 取最近 N 条，这里翻转回时间正序，供模型恢复上下文使用
+        Collections.reverse(chatMessages);
         List<ChatMessageDTO> result = new ArrayList<>();
         for (ChatMessage chatMessage : chatMessages) {
             try {
@@ -64,6 +70,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 创建用户消息并发布异步聊天事件触发 Agent 运行。
     public CreateChatMessageResponse createChatMessage(CreateChatMessageRequest request) {
         ChatMessage chatMessage = doCreateChatMessage(request);
         // 发布聊天通知事件
@@ -80,6 +87,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 直接创建消息 DTO（通常用于内部流程）。
     public CreateChatMessageResponse createChatMessage(ChatMessageDTO chatMessageDTO) {
         ChatMessage chatMessage = doCreateChatMessage(chatMessageDTO);
         return CreateChatMessageResponse.builder()
@@ -88,6 +96,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 创建 Agent 侧消息但不触发事件发布。
     public CreateChatMessageResponse agentCreateChatMessage(CreateChatMessageRequest request) {
         ChatMessage chatMessage = doCreateChatMessage(request);
         // 和 createChatMessage 的区别在于，Agent 创建的 chatMessage 不需要发布事件
@@ -96,6 +105,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
                 .build();
     }
 
+    // 将创建请求转换为 DTO 后执行统一落库流程。
     private ChatMessage doCreateChatMessage(CreateChatMessageRequest request) {
         // 将 CreateChatMessageRequest 转换为 ChatMessageDTO
         ChatMessageDTO chatMessageDTO = chatMessageConverter.toDTO(request);
@@ -103,6 +113,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
         return doCreateChatMessage(chatMessageDTO);
     }
 
+    // 将消息 DTO 持久化为数据库实体。
     private ChatMessage doCreateChatMessage(ChatMessageDTO chatMessageDTO) {
         try {
             // 将 ChatMessageDTO 转换为 ChatMessage 实体
@@ -124,6 +135,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 追加文本到指定消息内容末尾。
     public CreateChatMessageResponse appendChatMessage(String chatMessageId, String appendContent) {
         // 查询现有的聊天消息
         ChatMessage existingChatMessage = chatMessageMapper.selectById(chatMessageId);
@@ -161,6 +173,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 删除指定聊天消息。
     public void deleteChatMessage(String chatMessageId) {
         ChatMessage chatMessage = chatMessageMapper.selectById(chatMessageId);
         if (chatMessage == null) {
@@ -174,6 +187,7 @@ public class ChatMessageFacadeServiceImpl implements ChatMessageFacadeService {
     }
 
     @Override
+    // 按补丁请求更新指定聊天消息字段。
     public void updateChatMessage(String chatMessageId, UpdateChatMessageRequest request) {
         try {
             // 查询现有的聊天消息

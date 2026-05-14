@@ -22,34 +22,27 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
 
     @Override
     public String saveFile(String kbId, String documentId, MultipartFile file) throws IOException {
-        if (file.isEmpty()) {
-            throw new IllegalArgumentException("上传的文件为空");
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("uploaded file is empty");
         }
-
-        // 构建文件存储路径: basePath/kbId/documentId/filename
-        Path kbDir = Paths.get(baseStoragePath, kbId);
-        Path documentDir = kbDir.resolve(documentId);
-        
-        // 确保目录存在
-        Files.createDirectories(documentDir);
-        
-        // 生成唯一文件名（使用 UUID + 原始文件名）
-        String originalFilename = file.getOriginalFilename();
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
-        }
-        String uniqueFilename = UUID.randomUUID().toString() + extension;
-        
-        // 保存文件
-        Path targetPath = documentDir.resolve(uniqueFilename);
+        Path targetPath = buildTargetPath(kbId, documentId, file.getOriginalFilename());
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
-        
-        // 返回相对路径（相对于 baseStoragePath）
-        String relativePath = Paths.get(kbId, documentId, uniqueFilename).toString().replace("\\", "/");
-        log.info("文件保存成功: kbId={}, documentId={}, filename={}, path={}", 
+        String relativePath = buildRelativePath(kbId, documentId, targetPath.getFileName().toString());
+        log.info("file saved: kbId={}, documentId={}, filename={}, path={}",
+                kbId, documentId, file.getOriginalFilename(), relativePath);
+        return relativePath;
+    }
+
+    @Override
+    public String saveBytes(String kbId, String documentId, String originalFilename, byte[] data) throws IOException {
+        if (data == null || data.length == 0) {
+            throw new IllegalArgumentException("uploaded bytes are empty");
+        }
+        Path targetPath = buildTargetPath(kbId, documentId, originalFilename);
+        Files.write(targetPath, data);
+        String relativePath = buildRelativePath(kbId, documentId, targetPath.getFileName().toString());
+        log.info("bytes saved: kbId={}, documentId={}, filename={}, path={}",
                 kbId, documentId, originalFilename, relativePath);
-        
         return relativePath;
     }
 
@@ -58,21 +51,19 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
         Path fullPath = getFilePath(filePath);
         if (Files.exists(fullPath)) {
             Files.delete(fullPath);
-            log.info("文件删除成功: {}", filePath);
-            
-            // 尝试删除空的父目录
+            log.info("file deleted: {}", filePath);
+
             Path parentDir = fullPath.getParent();
             if (parentDir != null && Files.exists(parentDir)) {
                 try {
                     Files.delete(parentDir);
-                    log.info("目录删除成功: {}", parentDir);
+                    log.info("directory deleted: {}", parentDir);
                 } catch (IOException e) {
-                    // 目录不为空或其他原因无法删除，忽略
-                    log.debug("目录删除失败（可能不为空）: {}", parentDir);
+                    log.debug("skip deleting non-empty directory: {}", parentDir);
                 }
             }
         } else {
-            log.warn("文件不存在，跳过删除: {}", filePath);
+            log.warn("file not found, skip deleting: {}", filePath);
         }
     }
 
@@ -85,5 +76,20 @@ public class DocumentStorageServiceImpl implements DocumentStorageService {
     public boolean fileExists(String filePath) {
         Path fullPath = getFilePath(filePath);
         return Files.exists(fullPath) && Files.isRegularFile(fullPath);
+    }
+
+    private Path buildTargetPath(String kbId, String documentId, String originalFilename) throws IOException {
+        Path documentDir = Paths.get(baseStoragePath, kbId, documentId);
+        Files.createDirectories(documentDir);
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+        String uniqueFilename = UUID.randomUUID() + extension;
+        return documentDir.resolve(uniqueFilename);
+    }
+
+    private String buildRelativePath(String kbId, String documentId, String filename) {
+        return Paths.get(kbId, documentId, filename).toString().replace("\\", "/");
     }
 }

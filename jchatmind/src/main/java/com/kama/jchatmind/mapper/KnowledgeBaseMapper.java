@@ -1,7 +1,9 @@
 package com.kama.jchatmind.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kama.jchatmind.model.entity.KnowledgeBase;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,16 +14,8 @@ import java.util.List;
 * @Entity com.kama.jchatmind.model.entity.KnowledgeBase
 */
 @Mapper
-public interface KnowledgeBaseMapper {
-    int insert(KnowledgeBase knowledgeBase);
-
-    KnowledgeBase selectById(String id);
-
+public interface KnowledgeBaseMapper extends BaseMapper<KnowledgeBase> {
     List<KnowledgeBase> selectAll();
 
-    List<KnowledgeBase> selectByIdBatch(List<String> ids);
-
-    int deleteById(String id);
-
-    int updateById(KnowledgeBase knowledgeBase);
+    List<KnowledgeBase> selectByIdBatch(@Param("ids") List<String> ids);
 }

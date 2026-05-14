@@ -1,7 +1,9 @@
 package com.kama.jchatmind.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.kama.jchatmind.model.entity.Document;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -12,16 +14,8 @@ import java.util.List;
  * @Entity com.kama.jchatmind.model.entity.Document
  */
 @Mapper
-public interface DocumentMapper {
-    int insert(Document document);
-
-    Document selectById(String id);
-
+public interface DocumentMapper extends BaseMapper<Document> {
     List<Document> selectAll();
 
-    List<Document> selectByKbId(String kbId);
-
-    int deleteById(String id);
-
-    int updateById(Document document);
+    List<Document> selectByKbId(@Param("kbId") String kbId);
 }

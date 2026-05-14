@@ -56,7 +56,7 @@
             created_at,
             updated_at
         FROM document
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{param1} AS uuid)
     </select>
 
     <select id="selectAll" resultMap="BaseResultMap">
@@ -89,29 +89,29 @@
     </select>
 
     <delete id="deleteById">
-        DELETE FROM document WHERE id = CAST(#{id} AS uuid)
+        DELETE FROM document WHERE id = CAST(#{param1} AS uuid)
     </delete>
 
     <update id="updateById" parameterType="com.kama.jchatmind.model.entity.Document">
         UPDATE document
         <set>
-            <if test="kbId != null">
-                kb_id = CAST(#{kbId} AS uuid),
+            <if test="et.kbId != null">
+                kb_id = CAST(#{et.kbId} AS uuid),
             </if>
-            <if test="filename != null">
-                filename = #{filename},
+            <if test="et.filename != null">
+                filename = #{et.filename},
             </if>
-            <if test="filetype != null">
-                filetype = #{filetype},
+            <if test="et.filetype != null">
+                filetype = #{et.filetype},
             </if>
-            <if test="size != null">
-                size = #{size},
+            <if test="et.size != null">
+                size = #{et.size},
             </if>
-            <if test="metadata != null">
-                metadata = CAST(#{metadata} AS jsonb),
+            <if test="et.metadata != null">
+                metadata = CAST(#{et.metadata} AS jsonb),
             </if>
             updated_at = NOW()
         </set>
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{et.id} AS uuid)
     </update>
 </mapper>

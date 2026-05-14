@@ -52,6 +52,9 @@ public class KnowledgeBaseConverter {
                 .id(dto.getId())
                 .name(dto.getName())
                 .description(dto.getDescription())
+                .embeddingRule(dto.getMetadata() == null
+                        ? KnowledgeBaseDTO.EMBEDDING_RULE_TITLE_CONTENT_500
+                        : normalizeEmbeddingRule(dto.getMetadata().getEmbeddingRule()))
                 .build();
     }
 
@@ -61,10 +64,13 @@ public class KnowledgeBaseConverter {
 
     public KnowledgeBaseDTO toDTO(CreateKnowledgeBaseRequest request) {
         Assert.notNull(request, "CreateKnowledgeBaseRequest cannot be null");
+        KnowledgeBaseDTO.MetaData metadata = new KnowledgeBaseDTO.MetaData();
+        metadata.setEmbeddingRule(normalizeEmbeddingRule(request.getEmbeddingRule()));
 
         return KnowledgeBaseDTO.builder()
                 .name(request.getName())
                 .description(request.getDescription())
+                .metadata(metadata)
                 .build();
     }
 
@@ -78,5 +84,22 @@ public class KnowledgeBaseConverter {
         if (request.getDescription() != null) {
             dto.setDescription(request.getDescription());
         }
+        if (request.getEmbeddingRule() != null) {
+            if (dto.getMetadata() == null) {
+                dto.setMetadata(new KnowledgeBaseDTO.MetaData());
+            }
+            dto.getMetadata().setEmbeddingRule(normalizeEmbeddingRule(request.getEmbeddingRule()));
+        }
+    }
+
+    private String normalizeEmbeddingRule(String embeddingRule) {
+        if (embeddingRule == null || embeddingRule.isBlank()) {
+            return KnowledgeBaseDTO.EMBEDDING_RULE_TITLE_CONTENT_500;
+        }
+        return switch (embeddingRule.trim()) {
+            case KnowledgeBaseDTO.EMBEDDING_RULE_TITLE_ONLY -> KnowledgeBaseDTO.EMBEDDING_RULE_TITLE_ONLY;
+            case KnowledgeBaseDTO.EMBEDDING_RULE_CONTENT_ONLY_500 -> KnowledgeBaseDTO.EMBEDDING_RULE_CONTENT_ONLY_500;
+            default -> KnowledgeBaseDTO.EMBEDDING_RULE_TITLE_CONTENT_500;
+        };
     }
 }

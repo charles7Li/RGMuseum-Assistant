@@ -21,6 +21,18 @@ public interface DocumentStorageService {
     String saveFile(String kbId, String documentId, MultipartFile file) throws IOException;
 
     /**
+     * 保存字节数据为文件
+     *
+     * @param kbId             知识库ID
+     * @param documentId       文档ID
+     * @param originalFilename 原始文件名
+     * @param data             文件二进制
+     * @return 保存后的相对路径
+     * @throws IOException 文件保存失败
+     */
+    String saveBytes(String kbId, String documentId, String originalFilename, byte[] data) throws IOException;
+
+    /**
      * 删除文件
      *
      * @param filePath 文件路径

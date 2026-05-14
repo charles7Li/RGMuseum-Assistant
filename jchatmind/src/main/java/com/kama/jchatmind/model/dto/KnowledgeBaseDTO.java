@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class KnowledgeBaseDTO {
+    public static final String EMBEDDING_RULE_TITLE_ONLY = "title-only";
+    public static final String EMBEDDING_RULE_TITLE_CONTENT_500 = "title+content(500)";
+    public static final String EMBEDDING_RULE_CONTENT_ONLY_500 = "content-only(500)";
+
     private String id;
 
     private String name;
@@ -23,6 +27,7 @@ public class KnowledgeBaseDTO {
     @Data
     public static class MetaData {
         private String version;
+        private String embeddingRule;
     }
 
     @Override

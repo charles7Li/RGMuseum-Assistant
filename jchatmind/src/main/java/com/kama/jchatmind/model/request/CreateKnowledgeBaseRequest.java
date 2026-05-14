@@ -6,5 +6,6 @@ import lombok.Data;
 public class CreateKnowledgeBaseRequest {
     private String name;
     private String description;
+    private String embeddingRule;
 }
 

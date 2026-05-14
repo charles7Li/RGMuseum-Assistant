@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kama.jchatmind.mapper.ChatMemorySummaryMapper">
+
+    <resultMap id="BaseResultMap" type="com.kama.jchatmind.model.entity.ChatMemorySummary">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="sessionId" column="session_id" jdbcType="VARCHAR"/>
+        <result property="summaryText" column="summary_text" jdbcType="VARCHAR"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <select id="selectBySessionId" resultMap="BaseResultMap">
+        SELECT
+            id,
+            session_id,
+            summary_text,
+            created_at,
+            updated_at
+        FROM chat_memory_summary
+        WHERE session_id = CAST(#{sessionId} AS uuid)
+        LIMIT 1
+    </select>
+
+    <insert id="upsertSummary">
+        INSERT INTO chat_memory_summary
+        (
+            session_id,
+            summary_text,
+            created_at,
+            updated_at
+        )
+        VALUES
+        (
+            CAST(#{sessionId} AS uuid),
+            #{summaryText},
+            NOW(),
+            NOW()
+        )
+        ON CONFLICT (session_id)
+        DO UPDATE SET
+            summary_text = EXCLUDED.summary_text,
+            updated_at = NOW()
+    </insert>
+
+</mapper>

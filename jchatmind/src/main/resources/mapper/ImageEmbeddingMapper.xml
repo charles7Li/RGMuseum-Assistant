@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kama.jchatmind.mapper.ImageEmbeddingMapper">
+
+    <resultMap id="BaseResultMap" type="com.kama.jchatmind.model.entity.ImageEmbedding">
+        <id property="id" column="id" jdbcType="VARCHAR"/>
+        <result property="kbId" column="kb_id" jdbcType="VARCHAR"/>
+        <result property="docId" column="doc_id" jdbcType="VARCHAR"/>
+        <result property="fileName" column="file_name" jdbcType="VARCHAR"/>
+        <result property="filePath" column="file_path" jdbcType="VARCHAR"/>
+        <result property="metadata" column="metadata" jdbcType="VARCHAR"/>
+        <result property="embedding" column="embedding" jdbcType="OTHER"/>
+        <result property="createdAt" column="created_at" jdbcType="TIMESTAMP"/>
+        <result property="updatedAt" column="updated_at" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <resultMap id="SimilarityResultMap" type="com.kama.jchatmind.model.entity.ImageEmbedding" extends="BaseResultMap">
+        <result property="distance" column="distance" jdbcType="DOUBLE"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.kama.jchatmind.model.entity.ImageEmbedding"
+            keyColumn="id" keyProperty="id" useGeneratedKeys="true">
+        INSERT INTO image_embedding
+        (kb_id,
+         doc_id,
+         file_name,
+         file_path,
+         metadata,
+         created_at,
+         updated_at)
+        VALUES (CAST(#{kbId} AS uuid),
+                CAST(#{docId} AS uuid),
+                #{fileName},
+                #{filePath},
+                CAST(#{metadata} AS jsonb),
+                #{createdAt},
+                #{updatedAt})
+    </insert>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        <![CDATA[
+        SELECT id,
+               kb_id,
+               doc_id,
+               file_name,
+               file_path,
+               metadata,
+               embedding,
+               created_at,
+               updated_at
+        FROM image_embedding
+        WHERE id = CAST(#{param1} AS uuid)
+        ]]>
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM image_embedding
+        WHERE id = CAST(#{param1} AS uuid)
+    </delete>
+
+    <select id="selectByIds" resultMap="BaseResultMap">
+        <![CDATA[
+        SELECT id,
+               kb_id,
+               doc_id,
+               file_name,
+               file_path,
+               metadata,
+               embedding,
+               created_at,
+               updated_at
+        FROM image_embedding
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" close=")" separator=",">
+            CAST(#{id} AS uuid)
+        </foreach>
+        ]]>
+    </select>
+
+</mapper>

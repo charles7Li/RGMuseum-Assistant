@@ -52,7 +52,7 @@
             created_at,
             updated_at
         FROM chat_message
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{param1} AS uuid)
     </select>
 
     <select id="selectBySessionId" resultMap="BaseResultMap">
@@ -66,7 +66,8 @@
             updated_at
         FROM chat_message
         WHERE session_id = CAST(#{sessionId} AS uuid)
-        ORDER BY created_at ASC
+        ORDER BY created_at ASC,
+                 CASE WHEN role = 'tool' THEN 1 ELSE 0 END ASC
     </select>
 
     <select id="selectBySessionIdRecently" resultMap="BaseResultMap">
@@ -79,31 +80,32 @@
                updated_at
         FROM chat_message
         WHERE session_id = CAST(#{sessionId} AS uuid)
-        ORDER BY created_at
+        ORDER BY created_at DESC,
+                 CASE WHEN role = 'tool' THEN 0 ELSE 1 END ASC
         LIMIT #{limit}
     </select>
 
     <delete id="deleteById">
-        DELETE FROM chat_message WHERE id = CAST(#{id} AS uuid)
+        DELETE FROM chat_message WHERE id = CAST(#{param1} AS uuid)
     </delete>
 
     <update id="updateById" parameterType="com.kama.jchatmind.model.entity.ChatMessage">
         UPDATE chat_message
         <set>
-            <if test="sessionId != null">
-                session_id = CAST(#{sessionId} AS uuid),
+            <if test="et.sessionId != null">
+                session_id = CAST(#{et.sessionId} AS uuid),
             </if>
-            <if test="role != null">
-                role = #{role},
+            <if test="et.role != null">
+                role = #{et.role},
             </if>
-            <if test="content != null">
-                content = #{content},
+            <if test="et.content != null">
+                content = #{et.content},
             </if>
-            <if test="metadata != null">
-                metadata = CAST(#{metadata} AS jsonb),
+            <if test="et.metadata != null">
+                metadata = CAST(#{et.metadata} AS jsonb),
             </if>
             updated_at = NOW()
         </set>
-        WHERE id = CAST(#{id} AS uuid)
+        WHERE id = CAST(#{et.id} AS uuid)
     </update>
 </mapper>
