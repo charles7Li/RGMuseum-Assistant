@@ -1,0 +1,3 @@
+﻿# This Is Where I Came In
+
+《This Is Where I Came In》是Bee Gees的第20张原创专辑，也是他们的最后一张全部都是新歌的专辑。发行于2001年，不久后的2003年莫里斯·吉布病逝，从此Bee Gees就停止了运作。专辑中的主打歌《"This Is Where I Came In"》就说是表现了Bee Gees乐队的生涯，曾登上英国音乐排行榜第18位。吉布三兄弟在专辑中都有其主唱的歌曲，例如：巴里·吉布主唱《"Loose Talk Costs Lives"》，罗宾·吉布主唱《"Embrace"》，而莫里斯·吉布则主唱《"Man in the Middle"》。这张专辑包含了许多音乐流派的歌曲。《"This Is Where I Came In"》的和独立摇滚主题与Bee Gees1960年代的歌曲比较相似；《"She Keeps on Coming"》和《"Voice in the Wilderness"》则属于强摇滚歌曲；《"Sacred Trust"》、《 "Just in Case"》和《"Wedding Day"》延续了Bee Gees一贯的细腻爱情歌曲的风格。罗宾的两首歌曲，《"Embrace"》和《"Promise The Earth"》是欧洲流行音乐风格的舞曲。最与众不同的是《"Technicolor Dreams"》，是向1930年代叮砰巷致敬的歌曲。Bee Gees在演唱会Live By Request中曾演唱过其中几首歌。<nowiki>*</nowiki>澳洲／英国发行版的额外歌曲

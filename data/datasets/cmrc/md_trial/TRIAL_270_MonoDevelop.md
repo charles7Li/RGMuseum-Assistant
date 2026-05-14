@@ -1,0 +1,3 @@
+﻿# MonoDevelop
+
+MonoDevelop是个适用于Linux、Mac OS X和Microsoft Windows的开放原始码整合开发环境，主要用来开发Mono与.NET Framework软体。MonoDevelop整合了很多Eclipse与Microsoft Visual Studio的特性，像是Intellisense、版本控制还有GUI与Web设计工具。另外还整合了GTK#GUI设计工具（叫做Stetic）。目前支援的语言有Python、Vala、C♯、Java、BOO、Nemerle、Visual Basic .NET、CIL、C与C++。在2003年后期，部份Mono社群的开发者开始移植SharpDevelop到Linux上（SharpDevelop是个成功的.NET开放原始码整合开发环境），将原本以System.Windows.Forms为基础的代码改为使用GTK#。也由于是由SharpDevelop分支出来，所以MonoDevelop大致上的架构与SharpDevelop相同，不过时至今日，其实已经完全脱勾了。MonoDevelop几乎都以Mono专案为主，目前由Novell与Mono社群维护。MonoDevelop也可以在Windows跟Mac OS X平台上执行。但并不是一开始就可以的，而是到2.2之后才正式可以。MonoDevelop的Mac OS X版本里包含了Mono的安装程式，但却因为原生OS X平台GTK的拖拉问题而没有包含Stetic视觉化设计工具。Mono也提供了给执行在SPARC上的Solaris 8套件包，给OpenSolaris用的套件包则只由OpenSolaris社群里的群组提供。在FreeBSD上，同样地是由FreeBSD社群提供支援。

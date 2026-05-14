@@ -1,0 +1,4 @@
+﻿"group_name","kb_id","total","top1_count","top1_pct","hit3_count","hit3_pct","error_count"
+"title-only","bb183bb6-7a3b-48c1-991a-ac6d3098494d","100","76","76","79","79","0"
+"title+content(500)","e4bc48a1-51b4-4507-98a6-43bfa93ed290","100","86","86","94","94","0"
+"content-only(500)","82e83327-fa6f-4da9-beff-01fde4436564","100","86","86","94","94","0"
