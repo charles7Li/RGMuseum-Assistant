@@ -1,0 +1,7 @@
+ragas>=0.1.21
+datasets>=2.20.0
+pandas>=2.2.0
+requests>=2.32.0
+langchain-openai>=0.1.20
+langchain-community>=0.3.0
+sentence-transformers>=3.0.1
