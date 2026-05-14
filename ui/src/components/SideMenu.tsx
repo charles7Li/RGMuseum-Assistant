@@ -95,7 +95,7 @@ const SideMenu: React.FC<SideMenuProps> = () => {
         <div className="flex items-center gap-2.5 mx-4">
           <RobotOutlined className="text-xl text-indigo-600" />
           <div className="text-lg font-semibold select-none text-gray-900">
-            JChatMind
+            RGMuseum Assistant
           </div>
         </div>
       </div>

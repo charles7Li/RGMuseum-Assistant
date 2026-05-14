@@ -63,14 +63,16 @@ const EmptyAgentChatView: React.FC<DefaultAgentChatViewProps> = ({
               className="agent-selector"
               suffixIcon={<DownOutlined className="text-gray-400" />}
               placeholder="选择智能体助手"
-              optionRender={(option) => (
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">
-                    {agentsWithEmoji.find((a) => a.id === option.value)?.emoji}
-                  </span>
-                  <span className="text-sm">{option.label}</span>
-                </div>
-              )}
+              optionRender={(option) => {
+                const agent = agentsWithEmoji.find((a) => a.id === option.value);
+                return (
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{agent?.emoji}</span>
+                    <span className="text-sm">{option.label}</span>
+                    <span className="text-xs text-gray-400 ml-auto">{agent?.model}</span>
+                  </div>
+                );
+              }}
               options={agentsWithEmoji.map((agent) => ({
                 value: agent.id,
                 label: agent.name,

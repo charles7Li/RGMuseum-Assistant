@@ -17,6 +17,7 @@ export function useKnowledgeBases() {
         knowledgeBaseId: kb.id,
         name: kb.name,
         description: kb.description || "",
+        embeddingRule: kb.embeddingRule || "title+content(500)",
       }));
       setKnowledgeBases(converted);
     }
@@ -34,6 +35,7 @@ export function useKnowledgeBases() {
       knowledgeBaseId: kb.id,
       name: kb.name,
       description: kb.description || "",
+      embeddingRule: kb.embeddingRule || "title+content(500)",
     }));
     setKnowledgeBases(converted);
   }

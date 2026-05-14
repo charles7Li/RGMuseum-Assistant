@@ -15,6 +15,7 @@ interface AgentChatHistoryProps {
   displayAgentStatus?: boolean;
   agentStatusText?: string;
   agentStatusType?: SseMessageType;
+  streamingContent?: string;
 }
 
 // 工具调用展示组件（简化版，用于 assistant 消息内）
@@ -106,6 +107,7 @@ const AgentChatHistory: React.FC<AgentChatHistoryProps> = ({
   displayAgentStatus = false,
   agentStatusText = "",
   agentStatusType,
+  streamingContent = "",
 }) => {
   // 滚动容器引用
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -180,6 +182,13 @@ const AgentChatHistory: React.FC<AgentChatHistoryProps> = ({
       scrollToBottom();
     }
   }, [displayAgentStatus, isNearBottom, scrollToBottom]);
+
+  // 流式 token 到来时自动滚动
+  useEffect(() => {
+    if (streamingContent && isNearBottom) {
+      scrollToBottom();
+    }
+  }, [streamingContent, isNearBottom, scrollToBottom]);
 
   // 获取状态标签
   const getStatusLabel = () => {
@@ -259,6 +268,18 @@ const AgentChatHistory: React.FC<AgentChatHistoryProps> = ({
           </div>
         );
       })}
+      {streamingContent && (
+        <div className="mb-4">
+          <Bubble
+            content={
+              <XMarkdown streaming={{ enableAnimation: true, hasNextChunk: true }}>
+                {streamingContent}
+              </XMarkdown>
+            }
+            placement="start"
+          />
+        </div>
+      )}
       {displayAgentStatus && (
         <div className="mb-3">
           <div

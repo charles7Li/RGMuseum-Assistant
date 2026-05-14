@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import { Button, Input, Modal } from "antd";
+import { Button, Input, Modal, Select } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { SaveOutlined } from "@ant-design/icons";
-import { type CreateKnowledgeBaseRequest } from "../../api/api.ts";
+import {
+  type CreateKnowledgeBaseRequest,
+  type EmbeddingRule,
+} from "../../api/api.ts";
 
 interface AddKnowledgeBaseModalProps {
   open: boolean;
@@ -20,6 +23,7 @@ const AddKnowledgeBaseModal: React.FC<AddKnowledgeBaseModalProps> = ({
   const [formData, setFormData] = useState<CreateKnowledgeBaseRequest>({
     name: "",
     description: "",
+    embeddingRule: "title+content(500)",
   });
   
   const [createLoading, setCreateLoading] = useState(false);
@@ -36,6 +40,7 @@ const AddKnowledgeBaseModal: React.FC<AddKnowledgeBaseModalProps> = ({
       setFormData({
         name: "",
         description: "",
+        embeddingRule: "title+content(500)",
       });
       onClose();
     } finally {
@@ -48,9 +53,16 @@ const AddKnowledgeBaseModal: React.FC<AddKnowledgeBaseModalProps> = ({
     setFormData({
       name: "",
       description: "",
+      embeddingRule: "title+content(500)",
     });
     onClose();
   };
+
+  const embeddingOptions: { value: EmbeddingRule; label: string }[] = [
+    { value: "title-only", label: "title-only（仅标题）" },
+    { value: "title+content(500)", label: "title+content(500)（推荐）" },
+    { value: "content-only(500)", label: "content-only(500)（仅正文）" },
+  ];
 
   return (
     <Modal
@@ -85,6 +97,22 @@ const AddKnowledgeBaseModal: React.FC<AddKnowledgeBaseModalProps> = ({
             value={formData.description}
             onChange={(e) =>
               setFormData({ ...formData, description: e.target.value })
+            }
+          />
+        </div>
+        <div className="mb-6">
+          <label className="block text-gray-700 font-medium mb-2">
+            Embedding 规则
+          </label>
+          <Select
+            className="w-full"
+            value={formData.embeddingRule}
+            options={embeddingOptions}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                embeddingRule: value as EmbeddingRule,
+              })
             }
           />
         </div>

@@ -4,6 +4,7 @@ export interface KnowledgeBase {
   knowledgeBaseId: string;
   name: string;
   description: string;
+  embeddingRule?: "title-only" | "title+content(500)" | "content-only(500)";
 }
 
 export interface ToolCall {
@@ -37,12 +38,14 @@ export type SseMessageType =
   | "AI_PLANNING"
   | "AI_THINKING"
   | "AI_EXECUTING"
-  | "AI_DONE";
+  | "AI_DONE"
+  | "AI_TOKEN";
 
 export interface SseMessagePayload {
   message: ChatMessageVO;
   statusText: string;
   done: boolean;
+  token?: string;
 }
 
 export interface SseMessageMetadata {

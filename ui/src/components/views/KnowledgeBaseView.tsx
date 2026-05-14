@@ -10,6 +10,7 @@ import {
   Space,
   message,
   Empty,
+  Select,
 } from "antd";
 import {
   BookOutlined,
@@ -20,7 +21,11 @@ import {
 import type { UploadProps } from "antd";
 import { useKnowledgeBases } from "../../hooks/useKnowledgeBases.ts";
 import { useDocuments } from "../../hooks/useDocuments.ts";
-import { uploadDocument, type DocumentVO } from "../../api/api.ts";
+import {
+  uploadDocument,
+  type DocumentVO,
+  type EmbeddingRule,
+} from "../../api/api.ts";
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -31,6 +36,8 @@ const KnowledgeBaseView: React.FC = () => {
     useDocuments(knowledgeBaseId);
 
   const [uploading, setUploading] = useState(false);
+  const [selectedEmbeddingRule, setSelectedEmbeddingRule] =
+    useState<EmbeddingRule>("title+content(500)");
 
   // 查找当前知识库的详细信息
   const currentKnowledgeBase = useMemo(() => {
@@ -40,6 +47,14 @@ const KnowledgeBaseView: React.FC = () => {
       null
     );
   }, [knowledgeBaseId, knowledgeBases]);
+
+  React.useEffect(() => {
+    if (currentKnowledgeBase?.embeddingRule) {
+      setSelectedEmbeddingRule(currentKnowledgeBase.embeddingRule);
+    } else {
+      setSelectedEmbeddingRule("title+content(500)");
+    }
+  }, [currentKnowledgeBase]);
 
   // 处理文件上传
   const handleUpload: UploadProps["customRequest"] = async (options) => {
@@ -53,7 +68,11 @@ const KnowledgeBaseView: React.FC = () => {
     setUploading(true);
 
     try {
-      await uploadDocument(knowledgeBaseId, file as File);
+      await uploadDocument(
+        knowledgeBaseId,
+        file as File,
+        selectedEmbeddingRule,
+      );
       message.success("文档上传成功");
       await refreshDocuments();
       onSuccess?.(file);
@@ -183,6 +202,10 @@ const KnowledgeBaseView: React.FC = () => {
                 <Text type="secondary" className="text-sm">
                   知识库 ID: {currentKnowledgeBase.knowledgeBaseId}
                 </Text>
+                <br />
+                <Text type="secondary" className="text-sm">
+                  默认 Embedding: {currentKnowledgeBase.embeddingRule || "title+content(500)"}
+                </Text>
               </div>
             </div>
           </Card>
@@ -210,6 +233,21 @@ const KnowledgeBaseView: React.FC = () => {
             <Text type="secondary" className="block mt-2 text-xs">
               支持格式: Markdown
             </Text>
+            <div className="mt-3">
+              <Text className="block mb-1">本次上传 Embedding 规则</Text>
+              <Select
+                value={selectedEmbeddingRule}
+                style={{ width: 360 }}
+                options={[
+                  { value: "title-only", label: "title-only（仅标题）" },
+                  { value: "title+content(500)", label: "title+content(500)（推荐）" },
+                  { value: "content-only(500)", label: "content-only(500)（仅正文）" },
+                ]}
+                onChange={(value) =>
+                  setSelectedEmbeddingRule(value as EmbeddingRule)
+                }
+              />
+            </div>
           </Card>
         </div>
 

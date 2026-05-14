@@ -6,7 +6,7 @@ import Content from "../layout/Content.tsx";
 import AgentChatView from "./views/AgentChatView.tsx";
 import KnowledgeBaseView from "./views/KnowledgeBaseView.tsx";
 
-export default function JChatMindLayout() {
+export default function RGMALayout() {
   return (
     <Layout>
       <Sidebar>

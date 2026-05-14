@@ -1,4 +1,4 @@
-import { get, post, patch, del, BASE_URL } from "./http.ts";
+import { get, post, patch, put, del, BASE_URL } from "./http.ts";
 import type { ChatMessageVO, MessageType } from "../types";
 
 // 类型定义
@@ -8,7 +8,7 @@ export interface ChatOptions {
   messageLength?: number;
 }
 
-export type ModelType = "deepseek-chat" | "glm-4.6";
+export type ModelType = "deepseek-chat" | "glm-4.6" | "qwen3.6-plus";
 
 export interface CreateAgentRequest {
   name: string;
@@ -235,16 +235,24 @@ export interface KnowledgeBaseVO {
   id: string;
   name: string;
   description?: string;
+  embeddingRule?: EmbeddingRule;
 }
+
+export type EmbeddingRule =
+  | "title-only"
+  | "title+content(500)"
+  | "content-only(500)";
 
 export interface CreateKnowledgeBaseRequest {
   name: string;
   description?: string;
+  embeddingRule?: EmbeddingRule;
 }
 
 export interface UpdateKnowledgeBaseRequest {
   name?: string;
   description?: string;
+  embeddingRule?: EmbeddingRule;
 }
 
 export interface GetKnowledgeBasesResponse {
@@ -324,10 +332,14 @@ export async function getDocumentsByKbId(
 export async function uploadDocument(
   kbId: string,
   file: File,
+  embeddingRule?: EmbeddingRule,
 ): Promise<CreateDocumentResponse> {
   const formData = new FormData();
   formData.append("kbId", kbId);
   formData.append("file", file);
+  if (embeddingRule) {
+    formData.append("embeddingRule", embeddingRule);
+  }
 
   const response = await fetch(`${BASE_URL}/documents/upload`, {
     method: "POST",
@@ -374,4 +386,160 @@ export interface GetOptionalToolsResponse {
 export async function getOptionalTools(): Promise<GetOptionalToolsResponse> {
   const tools = await get<ToolVO[]>("/tools");
   return { tools };
+}
+
+export type RagRuntimeMode = "fast" | "deep";
+
+export interface RagRuntimeSettings {
+  mode: RagRuntimeMode;
+  rerankEnabled: boolean;
+}
+
+export interface UpdateRagRuntimeSettingsRequest {
+  mode?: RagRuntimeMode;
+  rerankEnabled?: boolean;
+}
+
+export async function getRagRuntimeSettings(): Promise<RagRuntimeSettings> {
+  return get<RagRuntimeSettings>("/rag/runtime-settings");
+}
+
+export async function updateRagRuntimeSettings(
+  request: UpdateRagRuntimeSettingsRequest,
+): Promise<RagRuntimeSettings> {
+  return put<RagRuntimeSettings>("/rag/runtime-settings", request);
+}
+
+export type NavigationMode = "walking" | "driving";
+
+export interface NavigationPlanRequest {
+  originLongitude: number;
+  originLatitude: number;
+  destinationLongitude: number;
+  destinationLatitude: number;
+  destinationName?: string;
+  mode?: NavigationMode;
+}
+
+export interface NavigationRouteStep {
+  index: number;
+  instruction: string;
+  road?: string;
+  distanceMeters: number;
+  durationSeconds: number;
+  polyline?: string;
+}
+
+export interface NavigationPlanResponse {
+  provider: string;
+  mode: NavigationMode;
+  origin: string;
+  destination: string;
+  distanceMeters: number;
+  durationSeconds: number;
+  overview: string;
+  polyline: string;
+  steps: NavigationRouteStep[];
+}
+
+export async function planNavigationRoute(
+  request: NavigationPlanRequest,
+): Promise<NavigationPlanResponse> {
+  return post<NavigationPlanResponse>("/navigation/plan", request);
+}
+
+export interface BrowserLocation {
+  longitude: number;
+  latitude: number;
+  accuracyMeters?: number;
+}
+
+export function getCurrentBrowserLocation(
+  timeoutMs = 10000,
+): Promise<BrowserLocation> {
+  if (!navigator.geolocation) {
+    return Promise.reject(new Error("当前浏览器不支持定位"));
+  }
+  return new Promise((resolve, reject) => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        resolve({
+          longitude: position.coords.longitude,
+          latitude: position.coords.latitude,
+          accuracyMeters: position.coords.accuracy,
+        });
+      },
+      (error) => {
+        reject(new Error(error.message || "获取定位失败"));
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: timeoutMs,
+        maximumAge: 0,
+      },
+    );
+  });
+}
+
+export async function planNavigationFromCurrentLocation(params: {
+  destinationLongitude: number;
+  destinationLatitude: number;
+  destinationName?: string;
+  mode?: NavigationMode;
+}): Promise<NavigationPlanResponse> {
+  const location = await getCurrentBrowserLocation();
+  return planNavigationRoute({
+    originLongitude: location.longitude,
+    originLatitude: location.latitude,
+    destinationLongitude: params.destinationLongitude,
+    destinationLatitude: params.destinationLatitude,
+    destinationName: params.destinationName,
+    mode: params.mode ?? "walking",
+  });
+}
+
+export interface MuseumMapPlanRequest {
+  originLongitude: number;
+  originLatitude: number;
+  target: string;
+  city?: string;
+  mode?: NavigationMode;
+  poiLimit?: number;
+  routeLimit?: number;
+  cityLimit?: boolean;
+}
+
+export interface MuseumRouteCandidate {
+  poiId: string;
+  museumName: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+  openTime: string;
+  closingTime: string;
+  businessStatus: string;
+  distanceMeters?: number;
+  durationSeconds?: number;
+  overview?: string;
+  polyline?: string;
+  steps?: NavigationRouteStep[];
+  routeError?: string;
+}
+
+export interface MuseumMapPlanResponse {
+  provider: string;
+  target: string;
+  city: string;
+  mode: NavigationMode;
+  searchKeywords: string;
+  candidateCount: number;
+  plannedCount: number;
+  candidates: MuseumRouteCandidate[];
+  summary: string;
+}
+
+export async function planMuseumMapRoute(
+  request: MuseumMapPlanRequest,
+): Promise<MuseumMapPlanResponse> {
+  return post<MuseumMapPlanResponse>("/museum/map/plan", request);
 }

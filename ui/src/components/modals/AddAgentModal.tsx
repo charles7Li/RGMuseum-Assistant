@@ -196,14 +196,18 @@ const AddAgentModal: React.FC<AddAgentModalProps> = ({
                   </label>
                   <Select
                     options={[
-                      {
+                        {
                         value: "deepseek-chat",
                         label: "deepseek-chat",
-                      },
-                      {
+                        },
+                        {
                         value: "glm-4.6",
                         label: "glm-4.6",
-                      },
+                        },
+                        {
+                        value: "qwen3.6-plus",
+                        label: "qwen3.6-plus",
+                        },
                     ]}
                     placeholder="请选择模型"
                     style={{ width: "300px" }}
