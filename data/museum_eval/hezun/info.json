@@ -1,0 +1,17 @@
+{
+  "id": "hezun",
+  "display_name": "何尊",
+  "queries": [
+    "何尊",
+    "宅兹中国 何尊",
+    "西周青铜器何尊"
+  ],
+  "positives": [
+    "hezun.jpg"
+  ],
+  "aliases": [
+    "宅兹中国",
+    "西周何尊"
+  ]
+}
+

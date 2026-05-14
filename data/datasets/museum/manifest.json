@@ -1,0 +1,25 @@
+{
+  "dataset_name": "国家博物馆结构化样例",
+  "artifact_count": 5,
+  "fields": [
+    "slug",
+    "name",
+    "era",
+    "category",
+    "museum",
+    "origin",
+    "image",
+    "description",
+    "features",
+    "value_points",
+    "image_caption",
+    "keywords",
+    "source_section"
+  ],
+  "notes": [
+    "本数据由用户上传的 Markdown 文档整理而成",
+    "本地 Typora 图片路径未自动导出原图，已保留 source_ref 供后续手动补图",
+    "适合用于 Spring AI + 文本向量检索，也适合后续接入 CN-CLIP 图像向量检索",
+    "建议后续补充 artifact_id、统一图片文件名，并增加更细粒度 metadata"
+  ]
+}
